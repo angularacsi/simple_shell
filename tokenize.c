@@ -1,34 +1,38 @@
 #include "shell.h"
 
 /**
-  * tokenize - Extract tokens from string
-  * @str: The string to tokenize
-  * @del: The delimiter of tokenization
-  * @len: Tokens number
-  *
-  * Return: An array of tokens of the string
-  */
-char **tokenize(char *str, char *del, int len)
+ * tokenize - tokenizes a buffer with a delimiter
+ * @buffer: buffer to tokenize
+ * @delimiter: delimiter to tokenize along
+ *
+ * Return: pointer to an array of pointers to the tokens
+ */
+char **tokenize(char *buffer, char *delimiter)
 {
-	char **tokens = NULL, *token = NULL, *temp = NULL;
-	int i = 0;
+	char **tokens = NULL;
+	size_t i = 0, mcount = 10;
 
-	tokens = malloc(sizeof(char *) * (len + 1));
-	if (!tokens)
+	if (buffer == NULL)
 		return (NULL);
-
-	str = remove_new_line(str);
-	temp = _strdup(str);
-	token = strtok(temp, del);
-
-	while (token)
+	tokens = malloc(sizeof(char *) * mcount);
+	if (tokens == NULL)
 	{
-		tokens[i] = _strdup(token);
-		token = strtok(NULL, del);
-		i++;
+		perror("Fatal Error");
+		return (NULL);
 	}
-
-	tokens[i] = NULL;
-	free(temp);
+	while ((tokens[i] = new_strtok(buffer, delimiter)) != NULL)
+	{
+		i++;
+		if (i == mcount)
+		{
+			tokens = _realloc(tokens, &mcount);
+			if (tokens == NULL)
+			{
+				perror("Fatal Error");
+				return (NULL);
+			}
+		}
+		buffer = NULL;
+	}
 	return (tokens);
 }
